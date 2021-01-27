@@ -4,7 +4,7 @@ class Student
 
   def self.new_from_db(row)
     # create a new Student object given a row from the database
-    #binding.pry
+    #creates an instance from the pulled db info
     new_student = self.new
     new_student.id = row[0]
     new_student.name = row[1]
@@ -15,6 +15,7 @@ class Student
   def self.all
     # retrieve all the rows from the "Students" database
     # remember each row should be a new instance of the Student class
+    #return all rows of students from the db
     sql = <<-SQL
       SELECT * FROM students
     SQL
@@ -27,6 +28,7 @@ class Student
   def self.find_by_name(name)
     # find the student in the database given a name
     # return a new instance of the Student class
+    #looks thru db to find db name = to argument name & then creates a ruby instance
     sql = <<-SQL
       SELECT * FROM students WHERE name = ? LIMIT 1;
     SQL
@@ -37,6 +39,7 @@ class Student
   end
   
   def save
+    #creates a db row
     sql = <<-SQL
       INSERT INTO students (name, grade) 
       VALUES (?, ?)
@@ -46,6 +49,7 @@ class Student
   end
   
   def self.create_table
+    #creates a student table for the first time
     sql = <<-SQL
     CREATE TABLE IF NOT EXISTS students (
       id INTEGER PRIMARY KEY,
@@ -58,11 +62,13 @@ class Student
   end
 
   def self.drop_table
+    #deletes student table if existing
     sql = "DROP TABLE IF EXISTS students"
     DB[:conn].execute(sql)
   end
 
   def self.all_students_in_grade_9
+    #just returns row does not create instances
     sql = <<-SQL
     SELECT * FROM students WHERE grade = 9
     SQL
@@ -70,26 +76,25 @@ class Student
   end
 
   def self.students_below_12th_grade
+    #creates instances for all students under 12th grade
     sql = <<-SQL
       SELECT * FROM students WHERE grade < 12
     SQL
     DB[:conn].execute(sql).map { |row| self.new_from_db(row) }
-   
-
-    #binding.pry
   end
 
   def self.first_X_students_in_grade_10(x)
+    #creates instances for x amount of students
     sql = <<-SQL
     SELECT * FROM students WHERE grade = 10 LIMIT ?
     SQL
     DB[:conn].execute(sql, x).map do |row|
       self.new_from_db(row)
     end
-     # binding.pry
   end
 
   def self.first_student_in_grade_10
+    #creates instance for first student
     sql = <<-SQL
     SELECT * FROM students WHERE grade = 10 LIMIT 1
     SQL
@@ -99,6 +104,7 @@ class Student
   end
 
   def self.all_students_in_grade_X(x)
+    #creates instances for
     sql = <<-SQL
     SELECT * FROM students WHERE grade = ?
     SQL
@@ -106,7 +112,6 @@ class Student
     DB[:conn].execute(sql, x).map do 
       |row| self.new_from_db(row)
     end
-
   end
 
 
